@@ -3,12 +3,12 @@ default: all
 CFLAGS := -I./include -g --std=gnu99
 CC := gcc
 
-BINARIES := hubo-ach-log
+BINARIES := hubo-log
 all : $(BINARIES)
 
 LIBS := -lach 
 
-hubo-ach-log: src/hubo-ach-log.o
+hubo-log: src/hubo-log.o
 	gcc -o $@ $< $(LIBS)
 
 %.o: %.c
