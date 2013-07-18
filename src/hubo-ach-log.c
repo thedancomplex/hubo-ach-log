@@ -42,26 +42,17 @@ int main(int argc, char **argv) {
     /* for size check */
     size_t fs;
 
+    FILE *file;
+    file = fopen("log.tex","w");
+  while(1) {
     /* Get the current feed-forward (state) */
-    r = ach_get( &chan_hubo_state, &H_state, sizeof(H_state), &fs, NULL, ACH_O_LAST );
+    r = ach_get( &chan_hubo_state, &H_state, sizeof(H_state), &fs, NULL, ACH_O_WAIT );
     if(ACH_OK != r) {
         assert( sizeof(H_state) == fs );
     }
+    fprintf(file,H_state);
 
-    /* Set Left Elbow Bend (LEB) and Right Shoulder Pitch (RSP) to  -0.2 rad and 0.1 rad respectively*/
-    H_ref.ref[LEB] = -0.2;
-    H_ref.ref[RSP] = 0.1;
 
-    /* Print out the actual position of the LEB */
-    double posLEB = H_state.joint[LEB].pos;
-    printf("Joint = %f\r\n",posLEB);
-
-    /* Print out the Left foot torque in X */
-    double mxLeftFT = H_state.ft[HUBO_FT_L_FOOT].m_x;
-    printf("Mx = %f\r\n", mxLeftFT);
-
-    /* Write to the feed-forward channel */
-    ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
-
+  }
 }
 
