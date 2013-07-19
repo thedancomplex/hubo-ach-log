@@ -57,23 +57,6 @@ ach_channel_t chan_hubo_ref;      // Feed-Forward (Reference)
 ach_channel_t chan_hubo_state;    // Feed-Back (State)
 ach_channel_t chan_hubo_to_sim;   // To Sim (Trigger)
 
-void currentDateTime(char* buf_ret) {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-    tstruct = *localtime(&now);
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
-    printf("%s\n\r",buf);
-    buf_ret = buf;
- time_t rawtime;
-  struct tm * timeinfo;
-
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );
-   buf_ret = buf;
-    return;
-}
-
 
 double getSpaceLeft(char* filename) {
 // Returns free space of drive where *filename is on in GB
@@ -100,7 +83,26 @@ double getSpaceLeft(char* filename) {
 
 
 int main(int argc, char **argv) {
+  int i = 0;
+  char* fname = "hubo-ach-log.log";
+  while(argc > i) {
+    if(strcmp(argv[i], "-f") == 0) {
+        if( argc > (i+1)) {
+            fname = argv[i+1];
+        }
+      }
+    if(strcmp(argv[i], "-h") == 0) {
 
+      printf("\n");
+      printf("Usage: hubo-log -f fileName\n");
+      printf("\tOptions:\n");
+      printf("\t\t-h   help menu\n");
+      printf("\t\t-f   log file name\n");
+      printf("\n");
+      return 0;
+    }
+      i++;
+  }
 
 
 
@@ -133,9 +135,6 @@ int main(int argc, char **argv) {
     size_t fs;
 
     FILE *file;
-//    char* fname = "ttmp.txt";
-    char* fname[80];
-    currentDateTime(&fname);
     file = fopen(fname,"w");
     int fd = open(fname, O_WRONLY);
     ach_flush(&chan_hubo_to_sim);
@@ -146,8 +145,8 @@ int main(int argc, char **argv) {
 
     int checkTime = HUBO_ACH_LOG_CHECK_TIME;  // check free space every x seconds
     int endi = (int)((double)checkTime*(1/(double)HUBO_LOOP_PERIOD));
-    int i = 0;
 
+    i = 0;
   while(1) {
 /* 
    r = ach_get( &chan_hubo_to_sim, &H_virtual, sizeof(H_virtual), &fs, NULL, ACH_O_WAIT );
